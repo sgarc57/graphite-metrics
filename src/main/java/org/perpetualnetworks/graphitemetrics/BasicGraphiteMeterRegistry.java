@@ -26,7 +26,7 @@ public class BasicGraphiteMeterRegistry extends DropwizardMeterRegistry {
 
     //This registry does NOT use tags, please use explicit paths
     //TODO: convert tags to path
-    public BasicGraphiteMeterRegistry(GraphiteConfig config, Clock clock) {
+    public BasicGraphiteMeterRegistry(GraphiteConfiguration config, Clock clock) {
         //this(config, clock, config.graphiteTagsEnabled() ? new GraphiteDimensionalNameMapper() : new GraphiteHierarchicalNameMapper(config.tagsAsPrefix()));
         this(config, clock, new GraphiteHierarchicalNameMapper());
     }

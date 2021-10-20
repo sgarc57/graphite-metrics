@@ -47,9 +47,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.codahale.metrics</groupId>
+            <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>3.0.2</version>
+            <version>4.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-graphite</artifactId>
+            <version>4.2.4</version>
         </dependency>
 
         <dependency>
@@ -222,8 +228,10 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <!--
                             <addClasspath>true</addClasspath>
                             <mainClass>${app.class.path}</mainClass>
+                            -->
                         </manifest>
                     </archive>
                 </configuration>

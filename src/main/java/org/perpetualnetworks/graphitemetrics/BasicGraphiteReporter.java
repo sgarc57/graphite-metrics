@@ -35,19 +35,40 @@ import java.util.concurrent.TimeUnit;
 public class BasicGraphiteReporter extends ScheduledReporter {
     private final Map<String, Long> reportedCounters = new ConcurrentHashMap<>();
     private volatile double countFactor = 1.0D;
-    private final GraphiteSender graphite;
+    private final GraphiteSender sender;
     private final Clock clock;
     private final String prefix;
+    private final ScheduledExecutorService executorService;
+    private final Boolean shutdownExecutorOnStop;
+    private final Set<MetricAttribute> disabledMetricsAttributes;
+    //private final GraphiteConfiguration graphiteConfiguration;
 
     public static Builder forRegistry(MetricRegistry registry) {
         return new Builder(registry);
     }
 
-    protected BasicGraphiteReporter(MetricRegistry registry, GraphiteSender graphite, Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit, MetricFilter filter, ScheduledExecutorService executor, boolean shutdownExecutorOnStop, Set<MetricAttribute> disabledMetricAttributes) {
-        super(registry, "perpetual-graphite-reporter", filter, rateUnit, durationUnit, executor, shutdownExecutorOnStop, disabledMetricAttributes);
-        this.graphite = graphite;
+    //TODO: fix builder method(s)
+    protected BasicGraphiteReporter(MetricRegistry registry,
+                                    GraphiteSender sender,
+                                    Clock clock,
+                                    String prefix,
+                                    TimeUnit rateUnit,
+                                    TimeUnit durationUnit,
+                                    //GraphiteConfiguration graphiteConfiguration,
+                                    MetricFilter filter,
+                                    ScheduledExecutorService executorService,
+                                    Boolean shutdownExecutorOnStop,
+                                    Set<MetricAttribute> disabledMetricAttributes) {
+        super(registry, "perpetual-graphite-reporter", filter, rateUnit, durationUnit, executorService, shutdownExecutorOnStop, disabledMetricAttributes);
+        //super(registry, graphiteConfiguration.getSenderName(), filter, graphiteConfiguration.getRateUnits(), graphiteConfiguration.getDurationUnits());
+        //this.graphiteConfiguration = graphiteConfiguration;
+        this.sender = sender;
         this.clock = clock;
+        //this.prefix = graphiteConfiguration.getPrefix();
         this.prefix = prefix;
+        this.executorService = executorService;
+        this.shutdownExecutorOnStop = shutdownExecutorOnStop;
+        this.disabledMetricsAttributes = disabledMetricAttributes;
     }
 
     public void report(SortedMap<String, Gauge> gauges,
@@ -62,7 +83,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
         long timestamp = this.clock.getTime() / 1000L;
 
         try {
-            this.graphite.connect();
+            this.sender.connect();
             Iterator var8 = gauges.entrySet().iterator();
 
             Entry entry;
@@ -102,14 +123,14 @@ public class BasicGraphiteReporter extends ScheduledReporter {
                 this.reportTimer((String)entry.getKey(), (Timer)entry.getValue(), timestamp);
             }
 
-            this.graphite.flush();
+            this.sender.flush();
         } catch (IOException var18) {
-            log.warn("Unable to report to Graphite", this.graphite, var18);
+            log.warn("Unable to report to Graphite", this.sender, var18);
         } finally {
             try {
-                this.graphite.close();
+                this.sender.close();
             } catch (IOException var17) {
-                log.warn("Error closing Graphite", this.graphite, var17);
+                log.warn("Error closing Graphite", this.sender, var17);
             }
 
         }
@@ -121,9 +142,9 @@ public class BasicGraphiteReporter extends ScheduledReporter {
             super.stop();
         } finally {
             try {
-                this.graphite.close();
+                this.sender.close();
             } catch (IOException var7) {
-                log.debug("Error disconnecting from Graphite", this.graphite, var7);
+                log.debug("Error disconnecting from Graphite", this.sender, var7);
             }
 
         }
@@ -176,7 +197,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
 
     private void sendIfEnabled(MetricAttribute type, String name, double value, long timestamp) throws IOException {
         if (!this.getDisabledMetricAttributes().contains(type)) {
-            this.graphite.send(this.prefix(name, type.getCode()), this.format(value), timestamp);
+            this.sender.send(this.prefix(name, type.getCode()), this.format(value), timestamp);
         }
     }
 
@@ -187,7 +208,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
             final String prefix = this.prefix(name, type.getCode());
             final String format = this.format(value);
             log.info("sending data to prefix: " + prefix + " with value: " + format);
-            this.graphite.send(prefix, format, timestamp);
+            this.sender.send(prefix, format, timestamp);
         }
     }
 
@@ -196,11 +217,11 @@ public class BasicGraphiteReporter extends ScheduledReporter {
     }
 
     private void reportCounter(String name, long value, long timestamp) throws IOException {
-        this.graphite.send(this.prefix(name, MetricAttribute.COUNT.getCode()), this.format(value), timestamp);
+        this.sender.send(this.prefix(name, MetricAttribute.COUNT.getCode()), this.format(value), timestamp);
         long diff = value - (Long)Optional.ofNullable((Long)this.reportedCounters.put(name, value)).orElse(0L);
         if (diff != 0L) {
-            this.graphite.send(this.prefix(name, "hits"), this.format(diff), timestamp);
-            this.graphite.send(this.prefix(name, "cps"), this.format((double)diff * this.countFactor), timestamp);
+            this.sender.send(this.prefix(name, "hits"), this.format(diff), timestamp);
+            this.sender.send(this.prefix(name, "cps"), this.format((double)diff * this.countFactor), timestamp);
         }
 
     }
@@ -208,7 +229,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
     private void reportGauge(String name, Gauge<?> gauge, long timestamp) throws IOException {
         String value = this.formatObject(gauge.getValue());
         if (value != null) {
-            this.graphite.send(this.prefix(name), value, timestamp);
+            this.sender.send(this.prefix(name), value, timestamp);
         }
 
     }
@@ -319,8 +340,8 @@ public class BasicGraphiteReporter extends ScheduledReporter {
             return this.build((GraphiteSender)graphite);
         }
 
-        public BasicGraphiteReporter build(GraphiteSender graphite) {
-            return new BasicGraphiteReporter(this.registry, graphite, this.clock, this.prefix, this.rateUnit, this.durationUnit, this.filter, this.executor, this.shutdownExecutorOnStop, this.disabledMetricAttributes);
+        public BasicGraphiteReporter build(GraphiteSender graphiteSender) {
+            return new BasicGraphiteReporter(this.registry, graphiteSender, this.clock, this.prefix, this.rateUnit, this.durationUnit, this.filter, this.executor, this.shutdownExecutorOnStop, this.disabledMetricAttributes);
         }
     }
 }

@@ -8,20 +8,8 @@ public class MetricsServiceImpl implements MetricsService {
     private final BasicGraphiteMeterRegistry basicGraphiteMeterRegistry;
 
     public MetricsServiceImpl(GraphiteConfiguration graphiteConfiguration) {
-        Clock clock = new Clock() {
-            @Override
-            public long wallTime() {
-                return System.currentTimeMillis();
-            }
-
-            @Override
-            public long monotonicTime() {
-                return SYSTEM.monotonicTime();
-            }
-        };
-        basicGraphiteMeterRegistry = new BasicGraphiteMeterRegistry(graphiteConfiguration.toGraphiteConfig(), clock);
+        basicGraphiteMeterRegistry = new BasicGraphiteMeterRegistry(graphiteConfiguration, Clock.SYSTEM);
         Metrics.addRegistry(basicGraphiteMeterRegistry);
-
     }
 
     //TODO: check where needed
