@@ -29,7 +29,7 @@ public class GraphiteConfiguration implements GraphiteConfig {
     @Getter
     List<String> tags;
     @Getter
-    Boolean tagsEnabled;
+    Boolean tagsEnabled = false;
     @Getter
     Duration step;
 
@@ -68,8 +68,19 @@ public class GraphiteConfiguration implements GraphiteConfig {
     }
 
     @Override
+    public int port() {
+        return getPort();
+    }
+
+    @Override
     public GraphiteProtocol protocol() {
+        //default protocol for graphite
         return GraphiteProtocol.UDP;
+    }
+
+    @Override
+    public Duration step() {
+        return getStep();
     }
 
     @Override
