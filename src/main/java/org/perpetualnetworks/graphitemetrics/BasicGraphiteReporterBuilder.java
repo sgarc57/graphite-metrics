@@ -44,6 +44,8 @@ public class BasicGraphiteReporterBuilder {
         @Getter
         private GraphiteSender graphiteSender;
 
+        private GraphiteConfiguration graphiteConfiguration;
+
         Builder(MetricRegistry registry) {
             this.registry = registry;
             this.clock = Clock.defaultClock();
@@ -65,6 +67,11 @@ public class BasicGraphiteReporterBuilder {
 
         public Builder withClock(Clock clock) {
             this.clock = clock;
+            return this;
+        }
+
+        public Builder withGraphiteConfig(GraphiteConfiguration graphiteConfiguration) {
+            this.graphiteConfiguration = graphiteConfiguration;
             return this;
         }
 
@@ -105,22 +112,21 @@ public class BasicGraphiteReporterBuilder {
             if (this.registry == null) {
                 throw new IllegalArgumentException("registry can not be null");
             }
+            if (this.graphiteConfiguration == null) {
+                throw new IllegalArgumentException("graphite config can not be null");
+            }
             return new BasicGraphiteReporter(
                     this.registry,
                     graphiteSender,
                     this.clock,
                     //TODO: fix
-                    GraphiteConfiguration.builder()
-                            .durationUnits(durationUnit)
-                            .rateUnits(rateUnit)
-                            .prefix(prefix)
-                            .build(),
+                    this.graphiteConfiguration,
                     //this.prefix, this.rateUnit, this.durationUnit,
                     getFilter(),
                     //this.executor,
-                    getExecutor(),
+                    //getExecutor(),
                     //this.shutdownExecutorOnStop,
-                    getShutdownExecutorOnStop(),
+                    //getShutdownExecutorOnStop(),
                     getDisabledMetricAttributes());
         }
     }

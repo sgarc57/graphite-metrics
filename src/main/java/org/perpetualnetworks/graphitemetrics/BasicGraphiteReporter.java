@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -46,11 +45,12 @@ public class BasicGraphiteReporter extends ScheduledReporter {
                                     // TimeUnit durationUnit,
                                     GraphiteConfiguration graphiteConfiguration,
                                     MetricFilter filter,
-                                    ScheduledExecutorService executorService,
-                                    Boolean shutdownExecutorOnStop,
+                                    //ScheduledExecutorService executorService,
+                                    //Boolean shutdownExecutorOnStop,
                                     Set<MetricAttribute> disabledMetricAttributes) {
         //super(registry, "perpetual-graphite-reporter", filter, rateUnit, durationUnit, executorService, shutdownExecutorOnStop, disabledMetricAttributes);
-        super(registry, graphiteConfiguration.getSenderName(), filter, graphiteConfiguration.getRateUnits(), graphiteConfiguration.getDurationUnits());
+        super(registry, graphiteConfiguration.getSenderName(), filter, graphiteConfiguration.getRateUnits(), graphiteConfiguration.getDurationUnits(),
+                graphiteConfiguration.getExecutorService(), graphiteConfiguration.getShutdownExecutorOnStop());
         this.sender = sender;
         this.clock = clock;
         this.prefix = graphiteConfiguration.getPrefix();
@@ -70,43 +70,44 @@ public class BasicGraphiteReporter extends ScheduledReporter {
 
         try {
             this.sender.connect();
-            Iterator var8 = gauges.entrySet().iterator();
+            Iterator recycledIterator = gauges.entrySet().iterator();
 
-            Entry entry;
-            while (var8.hasNext()) {
-                entry = (Entry) var8.next();
-                BasicGraphiteReportSenderFactory.reportGauge(this, (String) entry.getKey(), (Gauge) entry.getValue(), timestamp);
+            Entry recycledEntry;
+
+            while (recycledIterator.hasNext()) {
+                recycledEntry = (Entry) recycledIterator.next();
+                BasicGraphiteMeterFactory.reportGauge(this, (String) recycledEntry.getKey(), (Gauge) recycledEntry.getValue(), timestamp);
             }
 
-            var8 = counters.entrySet().iterator();
+            recycledIterator = counters.entrySet().iterator();
 
-            while (var8.hasNext()) {
-                entry = (Entry) var8.next();
-                BasicGraphiteReportSenderFactory.reportCounter(this, (String) entry.getKey(), (Counter) entry.getValue(), timestamp);
+            while (recycledIterator.hasNext()) {
+                recycledEntry = (Entry) recycledIterator.next();
+                BasicGraphiteMeterFactory.reportCounter(this, (String) recycledEntry.getKey(), (Counter) recycledEntry.getValue(), timestamp);
             }
 
-            var8 = histograms.entrySet().iterator();
+            recycledIterator = histograms.entrySet().iterator();
 
-            while (var8.hasNext()) {
-                entry = (Entry) var8.next();
-                BasicGraphiteReportSenderFactory.reportHistogram(this, (String) entry.getKey(), (Histogram) entry.getValue(), timestamp);
+            while (recycledIterator.hasNext()) {
+                recycledEntry = (Entry) recycledIterator.next();
+                BasicGraphiteMeterFactory.reportHistogram(this, (String) recycledEntry.getKey(), (Histogram) recycledEntry.getValue(), timestamp);
             }
 
-            var8 = meters.entrySet().iterator();
+            recycledIterator = meters.entrySet().iterator();
 
-            while (var8.hasNext()) {
-                entry = (Entry) var8.next();
-                //log.info("reporting meter entry: " + entry.getKey() + " " + entry.getValue().toString());
+            while (recycledIterator.hasNext()) {
+                recycledEntry = (Entry) recycledIterator.next();
+                //log.info("reporting meter recycledEntry: " + recycledEntry.getKey() + " " + recycledEntry.getValue().toString());
                 //log.info("timestamp was: " + timestamp);
-                BasicGraphiteReportSenderFactory.reportMetered(this, (String) entry.getKey(), (Metered) entry.getValue(), timestamp);
+                BasicGraphiteMeterFactory.reportMetered(this, (String) recycledEntry.getKey(), (Metered) recycledEntry.getValue(), timestamp);
             }
 
-            var8 = timers.entrySet().iterator();
+            recycledIterator = timers.entrySet().iterator();
 
-            while (var8.hasNext()) {
-                entry = (Entry) var8.next();
-                //log.info("reporting timer entry: " + entry.getKey() + " " + entry.getValue());
-                BasicGraphiteReportSenderFactory.reportTimer(this, (String) entry.getKey(), (Timer) entry.getValue(), timestamp);
+            while (recycledIterator.hasNext()) {
+                recycledEntry = (Entry) recycledIterator.next();
+                //log.info("reporting timer recycledEntry: " + recycledEntry.getKey() + " " + recycledEntry.getValue());
+                BasicGraphiteMeterFactory.reportTimer(this, (String) recycledEntry.getKey(), (Timer) recycledEntry.getValue(), timestamp);
             }
 
             this.sender.flush();

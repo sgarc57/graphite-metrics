@@ -7,14 +7,18 @@ import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.Value;
 
 import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class GraphiteConfiguration implements GraphiteConfig {
     @Getter
     String senderName;
@@ -25,17 +29,36 @@ public class GraphiteConfiguration implements GraphiteConfig {
     @Getter
     Boolean enabled;
     @Getter
-    String prefix;
+    String prefix;  //this will be the first dotted segment to the metric key
     @Getter
     List<String> tags;
     @Getter
-    Boolean tagsEnabled = false;
+    @Setter
+    Boolean tagsEnabled;
     @Getter
-    Duration step;
+    @Setter
+    @NonNull
+    Duration step; // duration / period of time between reports
+
+    @Getter
+    @Setter
+    @NonNull
+    TemporalUnit stepUnits; //units for steps
 
     TimeUnit rateUnits;
 
+    @Getter
+    @Setter
     TimeUnit durationUnits;
+
+    @Getter
+    @Setter
+    @NonNull
+    ScheduledExecutorService executorService;
+    @Getter
+    @Setter
+    Boolean shutdownExecutorOnStop;
+
 
     @Override
     public String get(String key) {
@@ -68,8 +91,18 @@ public class GraphiteConfiguration implements GraphiteConfig {
     }
 
     @Override
+    public String host() {
+        return getHost();
+    }
+
+    @Override
     public int port() {
         return getPort();
+    }
+
+    @Override
+    public boolean enabled() {
+        return getEnabled();
     }
 
     @Override

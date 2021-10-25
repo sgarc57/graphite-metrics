@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-public class BasicGraphiteReportSenderFactory {
+public class BasicGraphiteMeterFactory {
 
 
     public static void reportTimer(BasicGraphiteReporter reporter, String name, Timer timer, long timestamp) throws IOException {
