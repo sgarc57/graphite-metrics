@@ -5,16 +5,16 @@ import io.micrometer.core.instrument.Metrics;
 
 public class MetricsServiceImpl implements MetricsService {
 
-    private final BasicGraphiteMeterRegistry basicGraphiteMeterRegistry;
+    private final GraphiteMeterRegistry graphiteMeterRegistry;
 
     public MetricsServiceImpl(GraphiteConfiguration graphiteConfiguration) {
-        basicGraphiteMeterRegistry = new BasicGraphiteMeterRegistry(graphiteConfiguration, Clock.SYSTEM);
-        Metrics.addRegistry(basicGraphiteMeterRegistry);
+        graphiteMeterRegistry = new GraphiteMeterRegistry(graphiteConfiguration, Clock.SYSTEM);
+        Metrics.addRegistry(graphiteMeterRegistry);
     }
 
     //TODO: check where needed
     public void close() {
-        basicGraphiteMeterRegistry.close();
-        basicGraphiteMeterRegistry.stop();
+        graphiteMeterRegistry.close();
+        graphiteMeterRegistry.stop();
     }
 }

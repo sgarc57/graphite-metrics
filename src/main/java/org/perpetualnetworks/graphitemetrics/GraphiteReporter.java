@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class BasicGraphiteReporter extends ScheduledReporter {
+public class GraphiteReporter extends ScheduledReporter {
     @Getter
     private final Map<String, Long> reportedCounters = new ConcurrentHashMap<>();
     @Getter
@@ -37,17 +37,17 @@ public class BasicGraphiteReporter extends ScheduledReporter {
 
 
     //TODO: fix builder method(s)
-    protected BasicGraphiteReporter(MetricRegistry registry,
-                                    GraphiteSender sender,
-                                    Clock clock,
-                                    // String prefix,
-                                    // TimeUnit rateUnit,
-                                    // TimeUnit durationUnit,
-                                    GraphiteConfiguration graphiteConfiguration,
-                                    MetricFilter filter,
-                                    //ScheduledExecutorService executorService,
-                                    //Boolean shutdownExecutorOnStop,
-                                    Set<MetricAttribute> disabledMetricAttributes) {
+    protected GraphiteReporter(MetricRegistry registry,
+                               GraphiteSender sender,
+                               Clock clock,
+                               // String prefix,
+                               // TimeUnit rateUnit,
+                               // TimeUnit durationUnit,
+                               GraphiteConfiguration graphiteConfiguration,
+                               MetricFilter filter,
+                               //ScheduledExecutorService executorService,
+                               //Boolean shutdownExecutorOnStop,
+                               Set<MetricAttribute> disabledMetricAttributes) {
         //super(registry, "perpetual-graphite-reporter", filter, rateUnit, durationUnit, executorService, shutdownExecutorOnStop, disabledMetricAttributes);
         super(registry, graphiteConfiguration.getSenderName(), filter, graphiteConfiguration.getRateUnits(), graphiteConfiguration.getDurationUnits(),
                 graphiteConfiguration.getExecutorService(), graphiteConfiguration.getShutdownExecutorOnStop());
@@ -76,21 +76,21 @@ public class BasicGraphiteReporter extends ScheduledReporter {
 
             while (recycledIterator.hasNext()) {
                 recycledEntry = (Entry) recycledIterator.next();
-                BasicGraphiteMeterFactory.reportGauge(this, (String) recycledEntry.getKey(), (Gauge) recycledEntry.getValue(), timestamp);
+                GraphiteMeterFactory.reportGauge(this, (String) recycledEntry.getKey(), (Gauge) recycledEntry.getValue(), timestamp);
             }
 
             recycledIterator = counters.entrySet().iterator();
 
             while (recycledIterator.hasNext()) {
                 recycledEntry = (Entry) recycledIterator.next();
-                BasicGraphiteMeterFactory.reportCounter(this, (String) recycledEntry.getKey(), (Counter) recycledEntry.getValue(), timestamp);
+                GraphiteMeterFactory.reportCounter(this, (String) recycledEntry.getKey(), (Counter) recycledEntry.getValue(), timestamp);
             }
 
             recycledIterator = histograms.entrySet().iterator();
 
             while (recycledIterator.hasNext()) {
                 recycledEntry = (Entry) recycledIterator.next();
-                BasicGraphiteMeterFactory.reportHistogram(this, (String) recycledEntry.getKey(), (Histogram) recycledEntry.getValue(), timestamp);
+                GraphiteMeterFactory.reportHistogram(this, (String) recycledEntry.getKey(), (Histogram) recycledEntry.getValue(), timestamp);
             }
 
             recycledIterator = meters.entrySet().iterator();
@@ -99,7 +99,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
                 recycledEntry = (Entry) recycledIterator.next();
                 //log.info("reporting meter recycledEntry: " + recycledEntry.getKey() + " " + recycledEntry.getValue().toString());
                 //log.info("timestamp was: " + timestamp);
-                BasicGraphiteMeterFactory.reportMetered(this, (String) recycledEntry.getKey(), (Metered) recycledEntry.getValue(), timestamp);
+                GraphiteMeterFactory.reportMetered(this, (String) recycledEntry.getKey(), (Metered) recycledEntry.getValue(), timestamp);
             }
 
             recycledIterator = timers.entrySet().iterator();
@@ -107,7 +107,7 @@ public class BasicGraphiteReporter extends ScheduledReporter {
             while (recycledIterator.hasNext()) {
                 recycledEntry = (Entry) recycledIterator.next();
                 //log.info("reporting timer recycledEntry: " + recycledEntry.getKey() + " " + recycledEntry.getValue());
-                BasicGraphiteMeterFactory.reportTimer(this, (String) recycledEntry.getKey(), (Timer) recycledEntry.getValue(), timestamp);
+                GraphiteMeterFactory.reportTimer(this, (String) recycledEntry.getKey(), (Timer) recycledEntry.getValue(), timestamp);
             }
 
             this.sender.flush();
@@ -159,13 +159,13 @@ public class BasicGraphiteReporter extends ScheduledReporter {
         }
     }
 
-    public void sendIfEnabled(BasicGraphiteReporter reporter, MetricAttribute type, String name, double value, long timestamp) throws IOException {
+    public void sendIfEnabled(GraphiteReporter reporter, MetricAttribute type, String name, double value, long timestamp) throws IOException {
         if (!reporter.getDisabledMetricAttributes().contains(type)) {
             reporter.sender.send(reporter.getPrefix(name, type.getCode()), FormatUtils.format(value), timestamp);
         }
     }
 
-    public void sendIfEnabled(BasicGraphiteReporter reporter, MetricAttribute type, String name, long value, long timestamp) throws IOException {
+    public void sendIfEnabled(GraphiteReporter reporter, MetricAttribute type, String name, long value, long timestamp) throws IOException {
         //FOR DEBUGGING:
         //log.info("evaluating send if enabled with disabled attributes: " + reporter.getDisabledMetricAttributes());
         if (!reporter.getDisabledMetricAttributes().contains(type)) {

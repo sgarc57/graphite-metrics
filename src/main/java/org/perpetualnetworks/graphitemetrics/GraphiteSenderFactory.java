@@ -5,7 +5,7 @@ import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
 import com.codahale.metrics.graphite.PickledGraphite;
 
-public class BasicGraphiteSenderFactory {
+public class GraphiteSenderFactory {
     public static GraphiteSender getGraphiteSender(GraphiteConfiguration config) {
         switch (config.protocol()) {
             case PLAINTEXT:

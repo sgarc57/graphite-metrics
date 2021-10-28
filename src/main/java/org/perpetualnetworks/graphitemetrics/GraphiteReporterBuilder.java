@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class BasicGraphiteReporterBuilder {
+public class GraphiteReporterBuilder {
     @AllArgsConstructor
     public static class Builder {
         private final MetricRegistry registry;
@@ -100,12 +100,12 @@ public class BasicGraphiteReporterBuilder {
         //    return this;
         //}
 
-        public BasicGraphiteReporter build(Graphite graphite) {
+        public GraphiteReporter build(Graphite graphite) {
             withGraphiteSender(graphite);
             return this.build();
         }
 
-        public BasicGraphiteReporter build() {
+        public GraphiteReporter build() {
             if (this.graphiteSender == null) {
                 throw new IllegalArgumentException("graphite sender can not be null");
             }
@@ -115,7 +115,7 @@ public class BasicGraphiteReporterBuilder {
             if (this.graphiteConfiguration == null) {
                 throw new IllegalArgumentException("graphite config can not be null");
             }
-            return new BasicGraphiteReporter(
+            return new GraphiteReporter(
                     this.registry,
                     graphiteSender,
                     this.clock,

@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-public class BasicGraphiteMeterFactory {
+public class GraphiteMeterFactory {
 
 
-    public static void reportTimer(BasicGraphiteReporter reporter, String name, Timer timer, long timestamp) throws IOException {
+    public static void reportTimer(GraphiteReporter reporter, String name, Timer timer, long timestamp) throws IOException {
         Snapshot snapshot = timer.getSnapshot();
         reporter.sendIfEnabled(reporter, MetricAttribute.MAX, name, reporter.convertDuration((double)snapshot.getMax()), timestamp);
         reporter.sendIfEnabled(reporter, MetricAttribute.MEAN, name, reporter.convertDuration(snapshot.getMean()), timestamp);
@@ -31,7 +31,7 @@ public class BasicGraphiteMeterFactory {
         reportMetered(reporter, name, timer, timestamp);
     }
 
-    public static void reportMetered(BasicGraphiteReporter reporter, String name, Metered meter, long timestamp) throws IOException {
+    public static void reportMetered(GraphiteReporter reporter, String name, Metered meter, long timestamp) throws IOException {
         if (!reporter.getDisabledMetricAttributes().contains(MetricAttribute.COUNT)) {
             reportCounter(reporter, name, meter.getCount(), timestamp);
         }
@@ -42,7 +42,7 @@ public class BasicGraphiteMeterFactory {
         reporter.sendIfEnabled(reporter, MetricAttribute.MEAN_RATE, name, reporter.convertRate(meter.getMeanRate()), timestamp);
     }
 
-    public static void reportHistogram(BasicGraphiteReporter reporter, String name, Histogram histogram, long timestamp) throws IOException {
+    public static void reportHistogram(GraphiteReporter reporter, String name, Histogram histogram, long timestamp) throws IOException {
         Snapshot snapshot = histogram.getSnapshot();
         if (!reporter.getDisabledMetricAttributes().contains(MetricAttribute.COUNT)) {
             reportCounter(reporter, name, histogram.getCount(), timestamp);
@@ -60,18 +60,18 @@ public class BasicGraphiteMeterFactory {
         reporter.sendIfEnabled(reporter, MetricAttribute.P999, name, snapshot.get999thPercentile(), timestamp);
     }
 
-    public static void reportGauge(BasicGraphiteReporter reporter, String name, Gauge<?> gauge, long timestamp) throws IOException {
+    public static void reportGauge(GraphiteReporter reporter, String name, Gauge<?> gauge, long timestamp) throws IOException {
         String value = FormatUtils.formatObject(gauge.getValue());
         if (value != null) {
             reporter.getSender().send(reporter.getPrefix(name), value, timestamp);
         }
     }
 
-    public static void reportCounter(BasicGraphiteReporter reporter, String name, Counter counter, long timestamp) throws IOException {
+    public static void reportCounter(GraphiteReporter reporter, String name, Counter counter, long timestamp) throws IOException {
         reportCounter(reporter, name, counter.getCount(), timestamp);
     }
 
-    public static void reportCounter(BasicGraphiteReporter reporter, String name, long value, long timestamp) throws IOException {
+    public static void reportCounter(GraphiteReporter reporter, String name, long value, long timestamp) throws IOException {
         reporter.getSender().send(reporter.getPrefix(name, MetricAttribute.COUNT.getCode()), FormatUtils.format(value), timestamp);
         long diff = value - (Long) Optional.ofNullable((Long)reporter.getReportedCounters().put(name, value)).orElse(0L);
         if (diff != 0L) {

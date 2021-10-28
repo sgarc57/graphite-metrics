@@ -12,10 +12,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static org.perpetualnetworks.graphitemetrics.BasicGraphiteMeterRegistryTest.findAvailableUdpPort;
+import static org.perpetualnetworks.graphitemetrics.GraphiteMeterRegistryTest.findAvailableUdpPort;
 
 @Slf4j
-class BasicGraphiteReporterTest {
+class GraphiteReporterTest {
 
     public static final String LOCALHOST = "127.0.0.1";
     private final MockClock mockClock = new MockClock();
@@ -44,12 +44,12 @@ class BasicGraphiteReporterTest {
 
     @Test
     void reporterNoOpTest() {
-        BasicGraphiteMeterRegistry registry = new BasicGraphiteMeterRegistry(configuration, mockClock);
+        GraphiteMeterRegistry registry = new GraphiteMeterRegistry(configuration, mockClock);
 
-        final BasicGraphiteReporter reporter = BasicGraphiteReporterBuilder.forRegistry(registry.getDropwizardRegistry())
+        final GraphiteReporter reporter = GraphiteReporterBuilder.forRegistry(registry.getDropwizardRegistry())
                 .withGraphiteConfig(configuration)
                 .withClock(new DropwizardClock(mockClock))
-                .withGraphiteSender(BasicGraphiteSenderFactory.getGraphiteSender(configuration))
+                .withGraphiteSender(GraphiteSenderFactory.getGraphiteSender(configuration))
                 .build();
 
         reporter.report();

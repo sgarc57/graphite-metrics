@@ -12,35 +12,35 @@ import io.micrometer.graphite.GraphiteHierarchicalNamingConvention;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BasicGraphiteMeterRegistry extends DropwizardMeterRegistry {
+public class GraphiteMeterRegistry extends DropwizardMeterRegistry {
 
     private final GraphiteConfiguration config;
-    private final BasicGraphiteReporter reporter;
+    private final GraphiteReporter reporter;
 
     //TODO: convert tags to path
-    public BasicGraphiteMeterRegistry(GraphiteConfiguration config,
-                                      Clock clock) {
+    public GraphiteMeterRegistry(GraphiteConfiguration config,
+                                 Clock clock) {
         //this(config, clock, config.graphiteTagsEnabled() ? new GraphiteDimensionalNameMapper() : new GraphiteHierarchicalNameMapper(config.tagsAsPrefix()));
         this(config, clock, new GraphiteHierarchicalNameMapper());
     }
 
-    public BasicGraphiteMeterRegistry(GraphiteConfiguration config,
-                                      Clock clock,
-                                      HierarchicalNameMapper nameMapper) {
+    public GraphiteMeterRegistry(GraphiteConfiguration config,
+                                 Clock clock,
+                                 HierarchicalNameMapper nameMapper) {
         this(config, clock, nameMapper, new MetricRegistry());
     }
 
-    public BasicGraphiteMeterRegistry(GraphiteConfiguration config,
-                                      Clock clock,
-                                      HierarchicalNameMapper nameMapper,
-                                      MetricRegistry metricRegistry) {
+    public GraphiteMeterRegistry(GraphiteConfiguration config,
+                                 Clock clock,
+                                 HierarchicalNameMapper nameMapper,
+                                 MetricRegistry metricRegistry) {
         this(config, clock, nameMapper, metricRegistry, buildDefaultReporter(config, clock, metricRegistry));
     }
 
-    public BasicGraphiteMeterRegistry(GraphiteConfiguration config,
-                                      Clock clock,
-                                      HierarchicalNameMapper nameMapper,
-                                      MetricRegistry metricRegistry, BasicGraphiteReporter reporter) {
+    public GraphiteMeterRegistry(GraphiteConfiguration config,
+                                 Clock clock,
+                                 HierarchicalNameMapper nameMapper,
+                                 MetricRegistry metricRegistry, GraphiteReporter reporter) {
         super(config, metricRegistry, nameMapper, clock);
 
         this.config = config;
@@ -50,13 +50,13 @@ public class BasicGraphiteMeterRegistry extends DropwizardMeterRegistry {
         start();
     }
 
-    private static BasicGraphiteReporter buildDefaultReporter(GraphiteConfiguration config, Clock clock, MetricRegistry metricRegistry) {
-        return BasicGraphiteReporterBuilder.forRegistry(metricRegistry)
+    private static GraphiteReporter buildDefaultReporter(GraphiteConfiguration config, Clock clock, MetricRegistry metricRegistry) {
+        return GraphiteReporterBuilder.forRegistry(metricRegistry)
                 .withGraphiteConfig(config)
                 .withClock(new DropwizardClock(clock))
                 //.convertRatesTo(config.rateUnits())
                 //.convertDurationsTo(config.durationUnits())
-                .withGraphiteSender(BasicGraphiteSenderFactory.getGraphiteSender(config))
+                .withGraphiteSender(GraphiteSenderFactory.getGraphiteSender(config))
                 .build();
     }
 

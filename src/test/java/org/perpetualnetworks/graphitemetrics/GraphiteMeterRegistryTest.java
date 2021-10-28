@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-class BasicGraphiteMeterRegistryTest {
+class GraphiteMeterRegistryTest {
 
     public static final String LOCALHOST = "127.0.0.1";
     public static final int LATCH_ITERATIONS = 20;
@@ -58,7 +58,7 @@ class BasicGraphiteMeterRegistryTest {
 
         final CountDownLatch receiveLatch = new CountDownLatch(LATCH_ITERATIONS);
         //registy automtically starts from construction
-        BasicGraphiteMeterRegistry registry = new BasicGraphiteMeterRegistry(configuration, mockClock);
+        GraphiteMeterRegistry registry = new GraphiteMeterRegistry(configuration, mockClock);
         final String timerName = "my.timer";
         final String[] timerTags = {"tag1", "tag2"};
         final Timer timer = registry.timer(timerName, timerTags);
@@ -97,7 +97,7 @@ class BasicGraphiteMeterRegistryTest {
     void taggedMetrics() throws InterruptedException {
         final CountDownLatch receiveLatch = new CountDownLatch(LATCH_ITERATIONS);
 
-        BasicGraphiteMeterRegistry registry = new BasicGraphiteMeterRegistry(configuration, mockClock);
+        GraphiteMeterRegistry registry = new GraphiteMeterRegistry(configuration, mockClock);
 
         final String timerName = "my.timer";
         final String[] timerTags = {"tag1", "tag2"};
@@ -132,7 +132,7 @@ class BasicGraphiteMeterRegistryTest {
 
     @Test
     void simpleServerTest() {
-        BasicGraphiteMeterRegistry registry = new BasicGraphiteMeterRegistry(configuration, mockClock);
+        GraphiteMeterRegistry registry = new GraphiteMeterRegistry(configuration, mockClock);
         UdpTestServer server = new UdpTestServer(configuration.getPort());
         server.runServerWithAssertion(line -> {
             System.out.println(line);
