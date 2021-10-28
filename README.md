@@ -13,6 +13,9 @@ feel free to raise issue/PR.
 
 Maven artifact not yet release, in the meantime use [jitpack.io](https://jitpack.io/):
 
+[![Release](https://jitpack.io/v/sgarc57/graphite-metrics.svg)]
+(https://jitpack.io/#sgarc57/graphite-metrics)
+
 Add [jitpack.io](https://jitpack.io/) repository:
 ```
 <repositories>
