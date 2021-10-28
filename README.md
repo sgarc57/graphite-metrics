@@ -31,3 +31,11 @@ Add dependency:
     <version>master-SNAPSHOT</version>
 </dependency>
 ```
+or
+```
+<dependency>
+    <groupId>com.github.sgarc57</groupId>
+    <artifactId>degiro-java-client</artifactId>
+    <version><!-- insert short commit hash here --></version>
+</dependency>
+```
