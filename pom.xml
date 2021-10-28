@@ -8,7 +8,7 @@
     <artifactId>graphite-metrics</artifactId>
     <name>graphite-metrics</name>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>v0.0.2</version>
 
     <properties>
         <java.version>11</java.version>
