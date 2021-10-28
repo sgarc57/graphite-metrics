@@ -26,6 +26,14 @@
         <maven.failsafe.plugin>3.0.0-M5</maven.failsafe.plugin>
         <maven.checkstyle.plugin>3.1.0</maven.checkstyle.plugin>
         <maven.resources.plugin>3.0.2</maven.resources.plugin>
+        <nettry.transport.version>4.1.59.Final</nettry.transport.version>
+        <reactor.netty.core.version>1.0.4</reactor.netty.core.version>
+        <slf4j.core>1.7.21</slf4j.core>
+        <micrometer.core>1.7.5</micrometer.core>
+        <dropwizard.metrics>4.2.4</dropwizard.metrics>
+        <apache.commons.math.version>3.6.1</apache.commons.math.version>
+        <gihub.signalflow>0.4</gihub.signalflow>
+        <lombok.version>1.18.12</lombok.version>
 
         <junit.version>5.5.1</junit.version>
         <junit.platform.version>1.5.2</junit.platform.version>
@@ -44,57 +52,59 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport</artifactId>
-            <version>4.1.59.Final</version>
+            <version>${nettry.transport.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty-core</artifactId>
-            <version>1.0.4</version>
+            <version>${reactor.netty.core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.21</version>
+            <version>${slf4j.core}</version>
         </dependency>
 
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
-            <version>1.7.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>4.2.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-graphite</artifactId>
-            <version>4.2.4</version>
+            <version>${micrometer.core}</version>
         </dependency>
 
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-graphite</artifactId>
-            <version>1.7.5</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>${micrometer.core}</version>
         </dependency>
 
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-atlas</artifactId>
-            <version>1.7.5</version>
+            <version>${micrometer.core}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>${dropwizard.metrics}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-graphite</artifactId>
+            <version>${dropwizard.metrics}</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -106,13 +116,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
+            <version>${apache.commons.math.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.signaflo</groupId>
             <artifactId>timeseries</artifactId>
-            <version>0.4</version>
+            <version>${gihub.signalflow}</version>
         </dependency>
 
         <dependency>
