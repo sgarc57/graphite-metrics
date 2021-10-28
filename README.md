@@ -30,7 +30,16 @@ Add dependency:
 ```
 <dependency>
     <groupId>com.github.sgarc57</groupId>
-    <artifactId>degiro-java-client</artifactId>
+    <artifactId>graphite-metrics</artifactId>
+    <!-- use any valid tag -->
+    <version>v0.0.2</version>
+</dependency>
+```
+or
+```
+<dependency>
+    <groupId>com.github.sgarc57</groupId>
+    <artifactId>graphite-metrics</artifactId>
     <version>master-SNAPSHOT</version>
 </dependency>
 ```
@@ -38,7 +47,7 @@ or
 ```
 <dependency>
     <groupId>com.github.sgarc57</groupId>
-    <artifactId>degiro-java-client</artifactId>
+    <artifactId>graphite-metrics</artifactId>
     <version><!-- insert short commit hash here --></version>
 </dependency>
 ```
