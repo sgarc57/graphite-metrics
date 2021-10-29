@@ -16,6 +16,7 @@ public class GraphiteMeterRegistry extends DropwizardMeterRegistry {
 
     private final GraphiteConfiguration config;
     private final GraphiteReporter reporter;
+    private Boolean reporterStarted = false;
 
     //TODO: convert tags to path
     public GraphiteMeterRegistry(GraphiteConfiguration config,
@@ -61,21 +62,33 @@ public class GraphiteMeterRegistry extends DropwizardMeterRegistry {
     }
 
     public void stop() {
-        if (config.enabled()) {
-            log.info("registry stopped");
-            reporter.stop();
+        if (!config.enabled()) {
+            log.info("registry not enabled, exiting");
+            return;
         }
+        log.info("registry stopped");
+        reporter.stop();
+        this.reporterStarted = false;
     }
 
     public void start() {
-        if (config.enabled()) {
+        if (!config.enabled()) {
+            log.info("registry not enabled, exiting");
+            return;
+        }
+        if (!this.reporterStarted) {
             log.info("registry started");
             reporter.start(config.getStep().get(config.getStepUnits()), config.getDurationUnits());
+            this.reporterStarted = true;
         }
     }
 
     @Override
     public void close() {
+        if (!config.enabled()) {
+            log.info("registry not enabled, exiting");
+            return;
+        }
         if (config.enabled()) {
             log.info("registry closed");
             reporter.close();
